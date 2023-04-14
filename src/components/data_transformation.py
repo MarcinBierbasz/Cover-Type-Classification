@@ -8,7 +8,7 @@ import pandas as pd
 from dataclasses import dataclass
 
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler
 
 @dataclass
 class DataTransformationConfig:
@@ -24,10 +24,11 @@ class DataTransformation:
         '''
         try:
             preprocessor = Pipeline(
-                steps = [('scaler',StandardScaler())]
+                steps = [('scaler',MinMaxScaler())]
             )
-            return preprocessor
+            
             logging.info("Preprocessing pipeline created")
+            return preprocessor
         except Exception as e:
             raise CustomException(e,sys)
     
