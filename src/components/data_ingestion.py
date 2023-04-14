@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
 
 from src.components.data_transformation import DataTransformation, DataTransformationConfig
 from src.components.model_trainer import ModelTrainerConfig, ModelTrainer
+from src.components.model_evaluator import ModelEvaluatorConfig, ModelEvaluator
 
 @dataclass
 class DataIngestionConfig:
@@ -56,6 +57,8 @@ class DataIngestion:
             )
         except Exception as e:
             raise CustomException(e,sys)
+        
+
 if __name__ == "__main__":
     obj = DataIngestion()
     train_path, test_path = obj.initiate_data_ingestion()
@@ -64,4 +67,7 @@ if __name__ == "__main__":
     X_train,y_train,X_test,y_test,_ = data_transformation.initiate_data_transformation(train_path,test_path)
 
     model_trainer = ModelTrainer()
-    model_trainer.initiate_model_training(X_train,y_train,X_test,y_test)
+    trained_heuristic,trained_random_forest,trained_naive_bayes,trained_neural_network = model_trainer.initiate_model_training(X_train,y_train)
+
+    model_evaluator = ModelEvaluator()
+    model_evaluator.initiate_models_evaluation(X_test,y_test,trained_heuristic,trained_random_forest,trained_naive_bayes,trained_neural_network)

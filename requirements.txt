@@ -1,7 +1,9 @@
 pandas
 numpy
+matplotlib
 seaborn
 tensorflow
 scikit-learn
 dill
+Flask
 #-e .

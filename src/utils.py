@@ -8,6 +8,7 @@ import pandas as pd
 import dill
 from sklearn.utils import class_weight
 
+from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import MultinomialNB
 
@@ -18,6 +19,9 @@ from sklearn.metrics import f1_score,accuracy_score,confusion_matrix
 import tensorflow as tf
 from tensorflow import keras
 from scikeras.wrappers import KerasClassifier
+
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 
@@ -63,7 +67,11 @@ def tuning_sklearn_models(X_train,y_train,models:dict,param_grid:dict):
         return best_params
     except Exception as e:
             raise CustomException(e,sys)
-    
+
+def train_heuristic_classificator(X_train,y_train):
+    model_heuristic = LogisticRegression(C=100,n_jobs=-1)
+    model_heuristic.fit(X_train,y_train)
+    return model_heuristic
 
 def train_sklearn_models(X_train,y_train,models:dict,best_params:dict):
     '''
@@ -135,7 +143,61 @@ def train_neural_network(X_train,y_train,best_params):
         epochs,optimizer,batch_size = best_params
         y_train = np.array(pd.get_dummies(y_train))
         model_nn = make_neural_network_model(optimizer=optimizer,number_of_features = X_train.shape[-1])
-        model_nn.fit(X_train,y_train,epochs = epochs,batch_size = batch_size)
-        return model_nn
+        history = model_nn.fit(X_train,y_train,validation_split=0.33,epochs = epochs,batch_size = batch_size)
+        
+        return model_nn, history
+    except Exception as e:
+        raise CustomException(e,sys)
+
+def plot_neural_network_training(history,file_path):
+    fig=plt.figure(figsize=(12,20))
+    # First subplot for showing accuracy
+    ax=fig.add_subplot(2,1,1)
+    logging.info(history.history)
+    plt.plot(history.history['CategoricalAccuracy'])
+    plt.plot(history.history['val_CategoricalAccuracy'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'validation'], loc='upper left')
+    # Second subplot for showing loss
+    ax=fig.add_subplot(2,1,2) 
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'validation'], loc='upper left')
+    fig.tight_layout()
+    plt.savefig(file_path)
+def plot_heuristic_confusion_matrix(X_test,y_test,file_path,model):
+    fig = plt.figure(figsize=(12,20))
+    y_pred = model.predict(X_test)
+    sns.heatmap(confusion_matrix(y_test,y_pred),annot = True,fmt='g')
+    plt.savefig(file_path)
+
+def plot_baseline_confusion_matrix(X_test,y_test,file_path,*models):
+    '''
+    Joining two baseline confusion matrix subplots in one plot.
+    '''
+    try:
+        fig=plt.figure(figsize=(12,20))
+        for index, model in enumerate(models):
+            y_pred = model.predict(X_test)
+            ax=fig.add_subplot(len(models),1,index+1) 
+            sns.heatmap(confusion_matrix(y_test,y_pred),annot = True,fmt='g')
+            ax.set_title(str(model))
+        fig.tight_layout()
+        plt.savefig(file_path)
+    except Exception as e:
+        raise CustomException(e,sys)
+
+def plot_neural_network_confusion_matrix(X_test,y_test,file_path,model):
+    try:
+        y_pred = np.argmax(model.predict(X_test),axis = 1)+1
+        fig=plt.figure(figsize=(12,20))
+        sns.heatmap(confusion_matrix(y_test,y_pred),annot = True,fmt='g')
+        fig.tight_layout()
+        plt.savefig(file_path)
     except Exception as e:
         raise CustomException(e,sys)
