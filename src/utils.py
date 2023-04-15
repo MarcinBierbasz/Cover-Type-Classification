@@ -38,6 +38,16 @@ def save_object(file_path,obj):
             dill.dump(obj,file_obj)
     except Exception as e:
         raise CustomException(e,sys)
+    
+def load_object(file_path):
+    '''
+    Function loading object from pickle file
+    '''
+    try:
+        with open(file_path,'rb') as file_obj:
+            return dill.load(file_obj)
+    except Exception as e:
+        raise CustomException(e,sys)
 
 def calculate_class_weights(y_train):
     '''
