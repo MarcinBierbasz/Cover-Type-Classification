@@ -43,8 +43,8 @@ class ModelTrainer:
             }
             baseline_param_grid = {
                     "RandomForest": {
-                    "n_estimators": [1,2],
-                    "max_depth": [None,25]
+                    "n_estimators": [100,250],
+                    "max_depth": [None,25,50]
                     },
                     "MultinomialNB":{
                     "alpha":[0.001,0.01,0.1,1.,2.]
@@ -53,9 +53,9 @@ class ModelTrainer:
             }
             
             nn_param_grid = {
-                'epochs' :[5],
+                'epochs' :[20,50,100,150],
                 'optimizers' :  ["Adam","RMSprop"],
-                'batch_sizes' : [2048]
+                'batch_sizes' : [512,2048]
             }
             logging.info("Fitting heuristic classificator")
             trained_heuristic = train_heuristic_classificator(X_train,y_train)

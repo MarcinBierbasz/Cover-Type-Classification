@@ -69,7 +69,7 @@ def tuning_sklearn_models(X_train,y_train,models:dict,param_grid:dict):
             raise CustomException(e,sys)
 
 def train_heuristic_classificator(X_train,y_train):
-    model_heuristic = LogisticRegression(C=100,n_jobs=-1)
+    model_heuristic = LogisticRegression(C = 1000,n_jobs = -1,solver = 'saga',max_iter = 5000)
     model_heuristic.fit(X_train,y_train)
     return model_heuristic
 

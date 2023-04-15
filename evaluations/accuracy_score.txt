@@ -1,4 +1,4 @@
-Heuristic score: 0.7190206751145629
-Random Forest score: 0.8682429379746563
+Heuristic score: 0.7241152298788752
+Random Forest score: 0.9499795615412749
 Naive Bayes score: 0.6432778984961597
-Neural Network score: 0.6537682063638907
+Neural Network score: 0.7354488930961038
